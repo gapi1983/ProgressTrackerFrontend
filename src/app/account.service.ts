@@ -30,4 +30,7 @@ export class AccountService {
   forgotPassword(email:string){
     return this.http.post(`https://localhost:7225/api/Auth/forgot-password/${email}`,{});
   }
+  confirmEmail(email:string, token:string){
+    return this.http.get(`${this.baseUrl}/confirm-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
+  }
 }
