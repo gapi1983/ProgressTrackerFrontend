@@ -35,8 +35,8 @@ export class LoginComponent implements OnInit	{
   login(){
     if(this.loginForm.valid){
       this.accountService.login(this.loginForm.value).subscribe({
-        next:(response)=>{
-          console.log("login successful"); // create new component for dashboard
+        next:(response:any)=>{
+          this.router.navigateByUrl('/user-dashboard');
         },
         error:(err)=>{
           this.errors = err.error;

@@ -1,0 +1,9 @@
+.mat-sidenav-container {
+  height: 89vh;
+}
+.mat-sidenav-content{
+    padding:20px;
+}
+.mat-icon{
+    margin-left:15px;
+}

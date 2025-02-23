@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Login } from './models/login';
 import { ResetPasswordDto } from './models/resetPassword';
 import { ForgotPasswordDto } from './models/forgotPassword';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 
 
 
@@ -13,16 +14,29 @@ import { ForgotPasswordDto } from './models/forgotPassword';
 })
 export class AccountService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient) {
 
-  baseUrl = 'https://localhost:7225/api/Auth';
+    this.checkAuthStatus(); // when service is created check if user is authenticated or not
+    
+   }
+
+  baseUrl = 'https://localhost:7225/api/Auth'; // change to use  this api in all of my services 
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // this will track if user authenticated or not
 
   register(model:Register){
     return this.http.post(`https://localhost:7225/api/Auth/register`,model);
   }
 
   login(model:Login){
-    return this.http.post(`https://localhost:7225/api/Auth/login`,model);
+    return this.http.post(`https://localhost:7225/api/Auth/login`,model, {withCredentials:true}).pipe(
+      tap(()=>this.isAuthenticatedSubject.next(true))); // when user login set the value of isAuthenticatedSubject to true 
+  }
+  logout(){
+    return this.http.post(`https://localhost:7225/api/Auth/logout`,{}, {withCredentials:true}).pipe(
+      tap(()=>this.isAuthenticatedSubject.next(false))); // when user logout set the value of isAuthenticatedSubject to false
+  }
+  isLoggedIn(): Observable<boolean> {
+    return this.isAuthenticatedSubject.asObservable();
   }
   resetPassword(model:ResetPasswordDto){
     return this.http.post(`${this.baseUrl}/reset-password`, model);
@@ -33,4 +47,18 @@ export class AccountService {
   confirmEmail(email:string, token:string){
     return this.http.get(`${this.baseUrl}/confirm-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
   }
+// method to verify with backend if user is authenticated or not
+checkAuthStatus(): Observable<boolean> {
+  return this.http.get<{ isLoggedIn: boolean }>(`${this.baseUrl}/verify`, { withCredentials: true })
+    .pipe(
+      map(response => {
+        this.isAuthenticatedSubject.next(response.isLoggedIn);
+        return response.isLoggedIn;
+      }),
+      catchError(err => {
+        this.isAuthenticatedSubject.next(false);
+        return of(false);
+      })
+    );
+}
 }

@@ -1,0 +1,21 @@
+/* Optional: reduce default padding and font size */
+::ng-deep .mat-header-cell,
+::ng-deep .mat-cell {
+  padding: 8px 12px;       /* Tighter spacing than default */
+  font-size: 0.9rem;       /* Slightly smaller font */
+}
+
+/* Align the Action column header and cells to the right */
+.action-header, .action-cell {
+  text-align: right;
+}
+
+/* Optional: style the table to have 100% width inside the card */
+.my-table {
+  width: 100%;
+}
+
+/* Make icons slightly smaller if desired */
+::ng-deep .mat-icon {
+  font-size: 20px;
+}
