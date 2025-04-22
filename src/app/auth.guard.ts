@@ -1,21 +1,31 @@
-import { CanActivateFn,Router } from '@angular/router';
-import { AccountService } from './account.service';
+import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { inject } from '@angular/core';
-import { map } from 'rxjs';
+import { AccountService } from './account.service';
+import { map, of, switchMap } from 'rxjs';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const accountService = inject(AccountService) // injecting my account service
-  const router = inject(Router) // to handle navigation
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  const accountService = inject(AccountService);
+  const router = inject(Router);
 
   return accountService.checkAuthStatus().pipe(
-    map(isLogged => {
-      if (isLogged) {
-        return true;
-      } else {
+    switchMap(isLogged => {
+      if (!isLogged) {
         router.navigate(['/login']);
-        return false;
+        return of(false);
       }
+      const requiredRoles = route.data['roles'] as string[] || [];
+      if (requiredRoles.length === 0) {
+        return of(true);
+      }
+
+      const userRoles = accountService.currentUser?.roles || [];
+      const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
+      if (!hasRequiredRole) {
+
+        router.navigate(['/user-dashboard']);
+        return of(false);
+      }
+      return of(true);
     })
   );
 };
-

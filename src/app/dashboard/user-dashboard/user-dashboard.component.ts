@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from 'src/app/account.service';
 
@@ -7,9 +7,9 @@ import { AccountService } from 'src/app/account.service';
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css']
 })
-export class UserDashboardComponent {
+export class UserDashboardComponent{
 
-  constructor(private router:Router, private accountService: AccountService) { }
+  constructor(private router:Router, public accountService: AccountService) { }
 
   logout(){
     this.accountService.logout().subscribe({
@@ -22,5 +22,4 @@ export class UserDashboardComponent {
       }
     })
   }
-
 }

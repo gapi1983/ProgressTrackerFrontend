@@ -1,7 +1,8 @@
 export interface User {
     id:string;
     email: string 
-    firstName:string
-    lastName:string 
-    emailConfirmed:boolean
+    firstName?:string
+    lastName?:string 
+    emailConfirmed?:boolean
+    role: string[]
 }

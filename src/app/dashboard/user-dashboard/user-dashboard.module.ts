@@ -7,6 +7,7 @@ import {MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatListModule} from '@angular/material/list';
+import { authGuard } from 'src/app/auth.guard';
 
 // add more routes under user-dashborad
  const routes: Routes = [
@@ -29,19 +30,22 @@ import {MatListModule} from '@angular/material/list';
           path: 'create-task',
           loadChildren: () =>
             import('../../create-task/create-task.module')
-              .then(m => m.CreateTaskModule)
+              .then(m => m.CreateTaskModule),
+              canActivate: [authGuard], data: { roles: ['Admin','Manager'] }
         },
         {
           path:'user-management',
           loadChildren: () =>
             import('../../user-management/user-management.module')
-              .then(m => m.UserManagementModule)
+              .then(m => m.UserManagementModule),
+              canActivate: [authGuard], data: { roles: ['Admin'] }
         },
         {
           path:'role-management',
           loadChildren: () =>
             import('../../role-management/role-management.module')
-              .then(m => m.RoleManagementModule)
+              .then(m => m.RoleManagementModule),
+              canActivate: [authGuard], data: { roles: ['Admin'] }
         },
         // reset password
      ]

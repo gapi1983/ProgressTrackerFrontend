@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit	{
 
   ngOnInit(): void {
     this.initializeForm();
+
   }
 
   initializeForm() {
@@ -32,17 +33,27 @@ export class LoginComponent implements OnInit	{
     });
   }
 
-  login(){
-    if(this.loginForm.valid){
-      this.accountService.login(this.loginForm.value).subscribe({
-        next:(response:any)=>{
-          this.router.navigateByUrl('/user-dashboard');
-        },
-        error:(err)=>{
-          this.errors = err.error;
-          alert("something went wrong, check the credentials");
-        }
-      })
+  login() {
+    if (!this.loginForm.valid) {
+      return;
+    }
+    this.accountService.login(this.loginForm.value).subscribe({
+      next: () => {
+        this.accountService.getCurrentUser().subscribe({
+          next: () => {
+            this.router.navigateByUrl('/user-dashboard');
+          },
+          error: (err) => {
+            console.error('Error fetching current user:', err);
+            this.router.navigateByUrl('/user-dashboard');
+          }
+        });
+      },
+      error: (err) => {
+        this.errors = err.error;
+        alert('Something went wrong, check the credentials');
+      }
+    });
   }
 }
-}
+

@@ -1,9 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { User } from './models/user';
 import { UpdateUser } from './models/updateUser';
 import { Role } from './models/role';
+import { createTask } from './models/createTask';
+import { TaskItem } from './models/taskItem';
+import { CurrentUser } from './models/currentUser';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +15,8 @@ export class UserService {
 
   constructor(private http:HttpClient) { }
 
+  private userRole!:string;
+  private username!:string;
   baseUrl = 'https://localhost:7225/api/user';
 
   getUsers():Observable<User[]>{
@@ -49,4 +54,10 @@ export class UserService {
   removeRoleFromUser(userId:string, roleName:string){
     return this.http.delete(`${this.baseUrl}/remove-user-role/${userId}/${roleName}`,{withCredentials:true});
   }
+
+  // task endpoints
+  createTask(createTaskDto:createTask):Observable<TaskItem>{
+    return this.http.post<TaskItem>(`${this.baseUrl}/create-task`,createTaskDto,{withCredentials:true});
+  }
+  
 }

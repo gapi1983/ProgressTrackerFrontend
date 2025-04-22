@@ -6,6 +6,7 @@ import { Login } from './models/login';
 import { ResetPasswordDto } from './models/resetPassword';
 import { ForgotPasswordDto } from './models/forgotPassword';
 import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import { CurrentUser } from './models/currentUser';
 
 
 
@@ -19,6 +20,8 @@ export class AccountService {
     this.checkAuthStatus(); // when service is created check if user is authenticated or not
     
    }
+
+   currentUser?: CurrentUser; 
 
   baseUrl = 'https://localhost:7225/api/Auth'; // change to use  this api in all of my services 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // this will track if user authenticated or not
@@ -46,6 +49,15 @@ export class AccountService {
   }
   confirmEmail(email:string, token:string){
     return this.http.get(`${this.baseUrl}/confirm-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
+  }
+  getCurrentUser(): Observable<CurrentUser> {
+    return this.http.get<CurrentUser>(`https://localhost:7225/api/auth/me`, {withCredentials: true})
+      .pipe(
+        tap(currentUser => {
+          // e.g. store it in a Subject or local property
+          this.currentUser = currentUser;
+        })
+      );
   }
 // method to verify with backend if user is authenticated or not
 checkAuthStatus(): Observable<boolean> {

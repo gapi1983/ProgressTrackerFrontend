@@ -27,6 +27,11 @@ const routes: Routes = [
     import('./forgot-password/forgot-password.module').then(m => m.ForgotPasswordModule),
   },
   {
+    path: 'confirm-email',
+    loadChildren: () => import('./confirm-account/confirm-account.module')
+      .then(m => m.ConfirmAccountModule)
+  },
+  {
     path:"reset-password",
     loadChildren: () =>
     import('./reset-password/reset-password.module').then(m => m.ReserPasswordModule),
