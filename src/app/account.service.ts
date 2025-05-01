@@ -73,4 +73,8 @@ checkAuthStatus(): Observable<boolean> {
       })
     );
 }
+
+ refresh():Observable<boolean>{
+  return this.http.post(`${this.baseUrl}/refresh`,{}, {withCredentials:true}).pipe(map(()=>true))
+ }
 }
