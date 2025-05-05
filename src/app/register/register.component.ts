@@ -36,6 +36,7 @@ constructor(private accountService:AccountService, private formBuilder:FormBuild
       this.accountService.register(this.registerForm.value).subscribe({
         next:(response)=>{
           this.router.navigateByUrl('/login');
+          alert("Registration successful, please login");
         },
         error:(err)=>{
           this.errors = err.error;

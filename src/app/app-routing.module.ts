@@ -37,6 +37,11 @@ const routes: Routes = [
     import('./reset-password/reset-password.module').then(m => m.ReserPasswordModule),
   },
   {
+    path:"setup-2fa",
+    loadChildren: () =>
+    import('./setup2fa/setup2fa.module').then(m => m.Setup2faModule),
+  },
+  {
     path: "",
     redirectTo: "login",
     pathMatch: "full" // Ensures full path matching for redirect

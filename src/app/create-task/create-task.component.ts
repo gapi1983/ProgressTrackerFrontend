@@ -59,12 +59,11 @@ export class CreateTaskComponent implements OnInit {
   
       this.taskService.createTask(createTaskDto).subscribe({
         next: response => {
-          console.log('Task created successfully:', response);
+          alert('Task created successfully:');
           this.taskForm.reset();
         },
         error: error => {
-          console.error('Error creating task:', error);
-          console.log(this.taskForm.value);
+          console.log('Error creating task:', error);
         }
       });
     }

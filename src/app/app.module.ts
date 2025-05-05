@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RefreshInterceptor } from './interceptor/refresh.interceptor';
+import { Setup2faComponent } from './setup2fa/setup2fa.component';
 
 
 

@@ -7,6 +7,10 @@ import { ResetPasswordDto } from './models/resetPassword';
 import { ForgotPasswordDto } from './models/forgotPassword';
 import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { CurrentUser } from './models/currentUser';
+import { TwoFaCodeDto } from './models/TwoFaCodeDto';
+import { LoginResponse } from './models/loginResponse';
+import { Setup2FaResponse } from './models/Setup2FaResponse';
+import { Login2FaRequest } from './models/login2FaRequest';
 
 
 
@@ -25,14 +29,22 @@ export class AccountService {
 
   baseUrl = 'https://localhost:7225/api/Auth'; // change to use  this api in all of my services 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // this will track if user authenticated or not
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   register(model:Register){
     return this.http.post(`https://localhost:7225/api/Auth/register`,model);
   }
 
-  login(model:Login){
-    return this.http.post(`https://localhost:7225/api/Auth/login`,model, {withCredentials:true}).pipe(
-      tap(()=>this.isAuthenticatedSubject.next(true))); // when user login set the value of isAuthenticatedSubject to true 
+  login(model: Login): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`,model,{ withCredentials: true }    // ← this is correct and required
+    ).pipe(
+      tap(res => {
+        if (!res.requires2FA) {
+          // you might also mark your isAuthenticatedSubject here
+          this.isAuthenticatedSubject.next(true);
+        }
+      })
+    );
   }
   logout(){
     return this.http.post(`https://localhost:7225/api/Auth/logout`,{}, {withCredentials:true}).pipe(
@@ -59,6 +71,23 @@ export class AccountService {
         })
       );
   }
+
+// 2FA
+login2fa(request: Login2FaRequest): Observable<any> {
+  return this.http.post(`${this.baseUrl}/login/2fa`,request,{ withCredentials: true }
+  );
+}
+// fetch the QR code for 2FA setup
+get2FaSetup(): Observable<Setup2FaResponse> {
+  return this.http.get<Setup2FaResponse>(`${this.baseUrl}/2fa/setup`,{ withCredentials: true }
+  );
+}
+// confirm code
+enable2fa(code: string): Observable<any> {
+  return this.http.post(`${this.baseUrl}/2fa/enable`,{ code },{ withCredentials: true }
+  );
+}
+
 // method to verify with backend if user is authenticated or not
 checkAuthStatus(): Observable<boolean> {
   return this.http.get<{ isLoggedIn: boolean }>(`${this.baseUrl}/verify`, { withCredentials: true })
